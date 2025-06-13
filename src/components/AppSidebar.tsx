@@ -11,7 +11,7 @@ import {
   SidebarTrigger,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { MessageCircle, BarChart } from "lucide-react";
+import { MessageCircle, BarChart3, Sparkles } from "lucide-react";
 
 interface AppSidebarProps {
   activeView: "chat" | "analytics";
@@ -23,47 +23,76 @@ const menuItems = [
     title: "AI Chat",
     icon: MessageCircle,
     view: "chat" as const,
-    description: "Analyze funding and market data",
+    description: "Intelligent funding analysis",
+    gradient: "from-blue-500 to-purple-600",
   },
   {
     title: "Analytics",
-    icon: BarChart,
+    icon: BarChart3,
     view: "analytics" as const,
-    description: "View funding table data",
+    description: "Performance dashboard",
+    gradient: "from-emerald-500 to-teal-600",
   },
 ];
 
 export function AppSidebar({ activeView, onViewChange }: AppSidebarProps) {
   return (
-    <Sidebar className="border-r border-slate-200">
-      <SidebarHeader className="px-4 py-6 bg-gradient-to-r from-blue-600 to-blue-700">
-        <div className="flex items-center justify-between">
+    <Sidebar className="border-r border-slate-200/50 bg-white/95 backdrop-blur-md">
+      <SidebarHeader className="px-6 py-8 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+        <div className="relative flex items-center justify-between">
           <div className="text-white">
-            <h2 className="font-bold text-lg">FundingAI</h2>
-            <p className="text-blue-200 text-sm">Analysis Dashboard</p>
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="h-6 w-6 text-blue-200" />
+              <h2 className="font-bold text-xl">FundingAI</h2>
+            </div>
+            <p className="text-blue-200 text-sm font-medium">Analysis Platform</p>
           </div>
-          <SidebarTrigger className="text-white hover:bg-blue-600 rounded-md p-2" />
+          <SidebarTrigger className="text-white hover:bg-white/20 rounded-lg p-2 transition-all duration-200" />
         </div>
       </SidebarHeader>
       
-      <SidebarContent className="px-2">
+      <SidebarContent className="px-4 py-6">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-700 font-semibold">Main Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-slate-700 font-semibold text-sm uppercase tracking-wide mb-4">
+            Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-2">
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    className={`hover:bg-blue-50 hover:text-blue-700 transition-colors ${
-                      activeView === item.view ? 'bg-blue-100 text-blue-700' : ''
-                    }`}
+                    className={`
+                      relative group rounded-xl p-4 transition-all duration-300 hover:shadow-lg
+                      ${activeView === item.view 
+                        ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg scale-105` 
+                        : 'hover:bg-slate-50 hover:shadow-md'
+                      }
+                    `}
                     onClick={() => onViewChange(item.view)}
                   >
-                    <item.icon className="h-5 w-5" />
-                    <div className="flex flex-col">
-                      <span className="font-medium">{item.title}</span>
-                      <span className="text-xs text-slate-500">{item.description}</span>
+                    <div className="flex items-center gap-4">
+                      <div className={`
+                        p-2 rounded-lg transition-all duration-300
+                        ${activeView === item.view 
+                          ? 'bg-white/20' 
+                          : 'bg-slate-100 group-hover:bg-slate-200'
+                        }
+                      `}>
+                        <item.icon className={`h-5 w-5 ${activeView === item.view ? 'text-white' : 'text-slate-600'}`} />
+                      </div>
+                      <div className="flex flex-col text-left">
+                        <span className={`font-semibold ${activeView === item.view ? 'text-white' : 'text-slate-800'}`}>
+                          {item.title}
+                        </span>
+                        <span className={`text-xs ${activeView === item.view ? 'text-white/80' : 'text-slate-500'}`}>
+                          {item.description}
+                        </span>
+                      </div>
                     </div>
+                    {activeView === item.view && (
+                      <div className="absolute inset-0 bg-white/10 rounded-xl"></div>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
