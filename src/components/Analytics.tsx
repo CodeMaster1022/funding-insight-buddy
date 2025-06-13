@@ -1,8 +1,10 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, TrendingUp, DollarSign, Users } from "lucide-react";
+import { BarChart3, TrendingUp, DollarSign, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useTeam } from "@/contexts/TeamContext";
 
 // Mock data based on the Fund Analyses table structure
 const fundAnalyses = [
@@ -18,7 +20,8 @@ const fundAnalyses = [
       fees: "0.20%",
       performance: "12.5%",
       risk_metrics: "Medium"
-    }
+    },
+    teamId: "1",
   },
   {
     id: "2",
@@ -32,7 +35,8 @@ const fundAnalyses = [
       fees: "0.22%",
       performance: "11.8%",
       risk_metrics: "Medium"
-    }
+    },
+    teamId: "1",
   },
   {
     id: "3",
@@ -46,7 +50,8 @@ const fundAnalyses = [
       fees: "0.07%",
       performance: "15.2%",
       risk_metrics: "Medium-High"
-    }
+    },
+    teamId: "2",
   },
   {
     id: "4",
@@ -60,7 +65,8 @@ const fundAnalyses = [
       fees: "0.07%",
       performance: "8.9%",
       risk_metrics: "Medium"
-    }
+    },
+    teamId: "2",
   },
   {
     id: "5",
@@ -74,7 +80,8 @@ const fundAnalyses = [
       fees: "0.18%",
       performance: "9.3%",
       risk_metrics: "High"
-    }
+    },
+    teamId: "3",
   }
 ];
 
@@ -127,35 +134,32 @@ const statsCards = [
 ];
 
 export function Analytics() {
-  return (
-    <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 to-white">
-      <div className="px-8 py-6 bg-white/80 backdrop-blur-sm border-b border-slate-200/50">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">Fund Analytics Dashboard</h2>
-          <p className="text-slate-600">Comprehensive overview of fund performance and analytics</p>
-        </div>
-      </div>
-      
-      <div className="flex-1 p-8 space-y-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {statsCards.map((stat) => (
-            <Card key={stat.title} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">{stat.title}</p>
-                    <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
-                  </div>
-                  <div className={`p-3 rounded-xl ${stat.bgColor} group-hover:scale-110 transition-transform duration-300`}>
-                    <stat.icon className={`h-5 w-5 ${stat.color}`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+  const [currentPage, setCurrentPage] = useState(1);
+  const { selectedTeam } = useTeam();
 
+  const filteredFundAnalyses = selectedTeam
+    ? fundAnalyses.filter(fund => fund.teamId === selectedTeam.id)
+    : fundAnalyses;
+
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(filteredFundAnalyses.length / itemsPerPage);
+
+  const paginatedData = filteredFundAnalyses.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  return (
+    <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 to-white max-w-7xl mx-auto">  
+      <div className="flex-1 p-8 space-y-8">
         {/* Main Table */}
         <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
           <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50">
@@ -181,7 +185,7 @@ export function Analytics() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {fundAnalyses.map((fund, index) => (
+                  {paginatedData.map((fund, index) => (
                     <TableRow key={fund.id} className={`hover:bg-blue-50/50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
                       <TableCell className="font-mono text-sm text-slate-600 py-4">{fund.isin}</TableCell>
                       <TableCell className="font-semibold max-w-[250px] text-slate-800">
@@ -214,6 +218,37 @@ export function Analytics() {
                   ))}
                 </TableBody>
               </Table>
+            </div>
+            {/* Pagination Controls */}
+            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200">
+              <div className="text-sm text-slate-600">
+                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredFundAnalyses.length)} of {filteredFundAnalyses.length} entries
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-1"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <div className="text-sm text-slate-600">
+                  Page {currentPage} of {totalPages}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-1"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

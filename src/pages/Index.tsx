@@ -13,10 +13,10 @@ const Index = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <AppSidebar activeView={activeView} onViewChange={setActiveView} />
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col max-w-7xl mx-auto">
           {activeView === "analytics" && (
             <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/50 px-8 py-6 shadow-sm">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between ">
                 <div>
                   <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-blue-600 bg-clip-text text-transparent">
                     Analytics Dashboard
