@@ -11,36 +11,29 @@ import {
   SidebarTrigger,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { ChartBar, DollarSign, ChartPie } from "lucide-react";
+import { MessageCircle, BarChart } from "lucide-react";
+
+interface AppSidebarProps {
+  activeView: "chat" | "analytics";
+  onViewChange: (view: "chat" | "analytics") => void;
+}
 
 const menuItems = [
   {
-    title: "Portfolio Analysis",
-    icon: ChartPie,
-    description: "Analyze funding portfolios",
+    title: "AI Chat",
+    icon: MessageCircle,
+    view: "chat" as const,
+    description: "Analyze funding and market data",
   },
   {
-    title: "Market Trends",
-    icon: ChartBar,
-    description: "Track market movements",
-  },
-  {
-    title: "Investment Metrics",
-    icon: DollarSign,
-    description: "Key performance indicators",
+    title: "Analytics",
+    icon: BarChart,
+    view: "analytics" as const,
+    description: "View funding table data",
   },
 ];
 
-const analysisTypes = [
-  "Startup Funding",
-  "Venture Capital",
-  "Private Equity",
-  "IPO Analysis",
-  "Market Valuation",
-  "Risk Assessment",
-];
-
-export function AppSidebar() {
+export function AppSidebar({ activeView, onViewChange }: AppSidebarProps) {
   return (
     <Sidebar className="border-r border-slate-200">
       <SidebarHeader className="px-4 py-6 bg-gradient-to-r from-blue-600 to-blue-700">
@@ -55,32 +48,22 @@ export function AppSidebar() {
       
       <SidebarContent className="px-2">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-700 font-semibold">Analysis Tools</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-slate-700 font-semibold">Main Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton className="hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                  <SidebarMenuButton 
+                    className={`hover:bg-blue-50 hover:text-blue-700 transition-colors ${
+                      activeView === item.view ? 'bg-blue-100 text-blue-700' : ''
+                    }`}
+                    onClick={() => onViewChange(item.view)}
+                  >
                     <item.icon className="h-5 w-5" />
                     <div className="flex flex-col">
                       <span className="font-medium">{item.title}</span>
                       <span className="text-xs text-slate-500">{item.description}</span>
                     </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-700 font-semibold">Quick Analysis</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {analysisTypes.map((type) => (
-                <SidebarMenuItem key={type}>
-                  <SidebarMenuButton className="hover:bg-slate-50 transition-colors text-sm">
-                    <span>{type}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
