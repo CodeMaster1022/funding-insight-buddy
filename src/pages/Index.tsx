@@ -18,7 +18,7 @@ const Index = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-blue-600 bg-clip-text text-transparent">
-                  {activeView === "chat" ? "Funding Analysis AI" : "Fund Analytics Dashboard"}
+                  {activeView === "chat" ? "Funding Analysis AI" : "Analytics Dashboard"}
                 </h1>
                 <p className="text-slate-600 mt-1">
                   {activeView === "chat" ? "Intelligent insights for investment decisions" : "Comprehensive fund performance overview"}
@@ -38,12 +38,12 @@ const Index = () => {
           
           <div className="flex-1 flex">
             {activeView === "chat" ? (
+              <ChatInterface />
+            ) : (
               <div className="flex-1 flex flex-col">
                 <FundingMetrics />
-                <ChatInterface />
+                <Analytics />
               </div>
-            ) : (
-              <Analytics />
             )}
           </div>
         </main>
